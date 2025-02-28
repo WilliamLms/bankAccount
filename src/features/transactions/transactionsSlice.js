@@ -11,7 +11,9 @@ import { createSlice } from "@reduxjs/toolkit";
 // TODO: Set initial state to have a balance of 0 and an empty array of transactions.
 
 /** @type {{balance: number, history: Transaction[]}} */
-const initialState = {};
+const initialState = {balance: 0,
+  history: [],
+};
 
 /* TODO
 Add two reducers  to the transactions slice: "deposit" and "transfer".
@@ -35,8 +37,29 @@ const transactionsSlice = createSlice({
         balance: state.balance,
       });
     },
+    deposit: (state, { payload }) => {
+      state.balance += payload.amount;
+      state.history.push({
+        type: "deposit",
+        amount: payload.amount,
+        balance: state.balance,
+      });
+    },
+    transfer: (state, { payload }) => {
+      if (state.balance >= payload.amount) {
+        state.balance -= payload.amount;
+        state.history.push({
+          type: "transfer",
+          amount: payload.amount,
+          balance: state.balance,
+        });
+      } else {
+        console.warn("Insufficient balance for transfer.");
+      }
+    },
   },
 });
+
 
 export const { deposit, withdrawal, transfer } = transactionsSlice.actions;
 
